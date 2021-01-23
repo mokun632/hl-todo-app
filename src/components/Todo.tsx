@@ -3,8 +3,6 @@ import { TodoCard } from "./TodoCard";
 import { InputTodo } from "./InpuTodo";
 import { useDispatch } from "react-redux";
 import todoCardActions from "../store/todo_card/action";
-import todoCardListActions from "../store/todo_card_list/action";
-import { TodoCard as ITodoCard } from "../domain/entity/todoCard";
 
 const Todo: FC = () => {
   const dispatch = useDispatch();
@@ -12,13 +10,13 @@ const Todo: FC = () => {
   return (
     <>
       <InputTodo
-        setTodoCard={ (title: string) => {dispatch(todoCardActions.setTodoCard(title))}}
-        addTodoCardList={ (todoCard: ITodoCard) => {dispatch(todoCardListActions.addTodoCardList(todoCard))}}
+        setTodoCardTitle={ (title: string) => {dispatch(todoCardActions.setTodoCardTitle(title))}}
+        addTodoCardList={ (title: string) => {dispatch(todoCardActions.addTodoCardList(title))}}
       />
       <TodoCard
-        addTodo={ (todo: string) => {dispatch(todoCardActions.addTodo(todo))} }
-        setTodoText={ (todoText: string) => {dispatch(todoCardActions.setTodoText(todoText))}}
-        setOnDoneFlg={ (onDoneFlg: boolean) => {dispatch(todoCardActions.setOnDoneFlg(onDoneFlg))}}
+        addTodo={ (todoText: string, doneFlg: boolean, index: number) => {dispatch(todoCardActions.addTodo({todoText, doneFlg, index}))} }
+        setTodoText={ (todoText: string, index: number) => {dispatch(todoCardActions.setTodoText({todoText, index}))}}
+        setDoneFlg={ (doneFlg: boolean, todoCardIndex: number, index: number) => {dispatch(todoCardActions.setDoneFlg({doneFlg, todoCardIndex, index}))}}
       />
     </>
   )

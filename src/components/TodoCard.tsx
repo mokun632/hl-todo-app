@@ -1,5 +1,5 @@
 import { TextField } from '@material-ui/core';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from '../domain/entity/rootState';
@@ -100,67 +100,67 @@ const TodoText = styled(TextField)`
 `;
 
 type Props = {
-  addTodo: (todo: string) => void;
-  setTodoText: (todo: string) => void;
-  setOnDoneFlg: (onDoneFlg: boolean) => void;
+  addTodo: (todoText: string, doneFlg: boolean, index: number) => void;
+  setTodoText: (todoText: string, index: number) => void;
+  setDoneFlg: (doneFlg: boolean, todoCardIndex: number, index: number) => void;
 }
 
 export const TodoCard: FC<Props> = (
   {
-    addTodo = (todo: string) => undefined,
-    setTodoText = (todoText: string) => undefined,
-    setOnDoneFlg = (onDoneFlg: boolean) => undefined,
+    addTodo = () => undefined,
+    setTodoText = () => undefined,
+    setDoneFlg = () => undefined,
   }
 ) => {
-  const todoCardList = useSelector((state: RootState) => state.todoCardList);
   const todoCard = useSelector((state: RootState) => state.todoCard);
-
-  useEffect(() => {
-    setTodoText("")
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [todoCard.todos])
 
   return (
     <TodoCardsWrapper>
-      {todoCardList.todoCards.length > 0 && 
+      {todoCard.todoCardList.length > 0 && 
       (
-       todoCardList.todoCards.map((t, i) => (
-         <TodoCards key={i}>
+        todoCard.todoCardList.map((todoCardList, todoCardIndex) => (
+         <TodoCards key={todoCardIndex}>
            <TodoMainTitle>
-             {t.title}
+             {todoCardList.title}
            </TodoMainTitle>
            <TodoMain>
-            {todoCard.todos.map((t, i) => (
+            {todoCardList.todos.map((todo, i) => (
               <TodoCheckBoxWrapper key={i}>
                 <TodoCheckBox 
                   type="checkbox"
-                  onClick={_ => setOnDoneFlg( todoCard.onDoneFlg? false : true)}
-                  checked={todoCard.onDoneFlg}
+                  onClick={_ => setDoneFlg( todo.doneFlg? false : true, todoCardIndex, i)}
                 />
                 <TodoCheckBoxLabel>
-                  {t}
+                  {todo.doneFlg? 
+                  <del>
+                    {todo.todoText}
+                  </del>
+                  :
+                  todo.todoText}
                 </TodoCheckBoxLabel>
               </TodoCheckBoxWrapper>
               )
              )
             }
-            {todoCard.todos.length < 6 &&
-            (  
-              <TodoCheckBoxWrapper>
-                <TodoText
-                  value={todoCard.todoText}
-                  onChange={e => setTodoText(e.target.value)}
-                  onKeyPress={e => {
-                    e.key === "Enter" && 
-                    !!todoCard.todoText &&
-                    addTodo(todoCard.todoText)
-                  }} 
-                  onBlur={_ => {
-                    !!todoCard.todoText && addTodo(todoCard.todoText)
-                  }}
-                />
-              </TodoCheckBoxWrapper>
-            )
+            {
+              todoCardList.todos.length < 6 &&
+              (  
+                <TodoCheckBoxWrapper>
+                  <TodoText
+                    value={todoCard.todoCardList[todoCardIndex].preTodoText}
+                    onChange={e => setTodoText(e.target.value, todoCardIndex)}
+                    onKeyPress={e => {
+                      e.key === "Enter" && 
+                      !!todoCard.todoCardList[todoCardIndex].preTodoText &&
+                      addTodo(todoCard.todoCardList[todoCardIndex].preTodoText, false, todoCardIndex)
+                    }} 
+                    onBlur={_ => {
+                      !!todoCard.todoCardList[todoCardIndex].preTodoText && 
+                      addTodo(todoCard.todoCardList[todoCardIndex].preTodoText, false, todoCardIndex)
+                    }}
+                  />
+                </TodoCheckBoxWrapper>
+              )
             }
            </TodoMain>
          </TodoCards>

@@ -1,13 +1,13 @@
 import actionCreaterFactory from "typescript-fsa";
-import { TodoCard } from "../../domain/entity/todoCard";
 
 const actionCraeter = actionCreaterFactory();
 
-const todoCardActions = {
-  setTodoCard: actionCraeter<TodoCard["title"]>("SET_TODO_CARD"),
-  addTodo: actionCraeter<string>("ADD_TODOS"),
-  setTodoText: actionCraeter<TodoCard["todoText"]>("SET_TODO_TEXT"),
-  setOnDoneFlg: actionCraeter<TodoCard["onDoneFlg"]>("SET_ONDONE_FLG"),
+const todoCardListActions = {
+  setTodoCardTitle: actionCraeter<string>("SET_TODO_CARD_TITLE"),
+  addTodoCardList: actionCraeter<string>("ADD_TODO_CARD_LIST"),
+  setTodoText: actionCraeter<{todoText: string, index: number}>("SET_TODO_TEXT"),
+  addTodo: actionCraeter<{todoText: string, doneFlg: boolean, index: number}>("ADD_TODOS"),
+  setDoneFlg: actionCraeter<{doneFlg: boolean, todoCardIndex: number, index: number}>("SET_DONE_FLG"),
 };
 
-export default todoCardActions;
+export default todoCardListActions;

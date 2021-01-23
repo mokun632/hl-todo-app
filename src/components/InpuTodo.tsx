@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from '../domain/entity/rootState';
-import { TodoCard as ITodoCard, TodoCard } from '../domain/entity/todoCard';
 
 const InputTodoWrapper = styled.div`
   margin-top: 5px;
@@ -38,38 +37,29 @@ const InputTodoButton = styled.button`
 `;
 
 type Props= {
-  setTodoCard: (title: string) => void;
-  addTodoCardList: (todoList: ITodoCard) => void;
+  setTodoCardTitle: (title: string) => void;
+  addTodoCardList: (title: string) => void;
 }
-
-export const initTodoCard: TodoCard = {
-  title: "",
-  todoText: "",
-  onDoneFlg: false,
-  todos: [],
-};
 
 export const InputTodo: FC<Props> = (
   {
-    setTodoCard = () => undefined,
+    setTodoCardTitle = () => undefined,
     addTodoCardList = () => undefined,
   }
 ) => {
   const todoCard = useSelector((state: RootState) => state.todoCard);
-  const todoCardList = useSelector((state: RootState) => state.todoCardList);
 
   return (
     <>
       <InputTodoWrapper>
         <InputTodoText
           value={todoCard.title}
-          onChange={e => setTodoCard(e.target.value)} 
+          onChange={e => setTodoCardTitle(e.target.value)} 
         />
         <InputTodoButton
-          disabled={!(todoCardList.todoCards.length < 10) || !todoCard.title}
+          disabled={!(todoCard.title.length < 10) || !todoCard.title}
           onClick={_ => {
-            addTodoCardList({...initTodoCard, title: todoCard.title });
-            todoCard.title = "";
+            addTodoCardList(todoCard.title);
           }}
         >
           Create Card
