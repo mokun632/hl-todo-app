@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import styled from 'styled-components';
+import Alert from './Alert';
 import Todo from './Todo';
 
 const HeaderWrapper = styled.header`
@@ -20,6 +21,7 @@ const App: FC = () => {
         </HeaderLogo>
       </HeaderWrapper>
       <Todo />
+      <Alert />
     </>
   )
 };
