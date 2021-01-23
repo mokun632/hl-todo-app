@@ -91,11 +91,6 @@ const TodoCheckBoxLabel = styled.label`
 const TodoText = styled(TextField)`
   margin: 0;
   width: 100%;
-
-  @media (max-width: 500px) {
-    margin-left: 10px;
-    width: 100px;
-  }
 `;
 
 type Props = {
