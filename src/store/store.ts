@@ -2,12 +2,10 @@ import { createStore, combineReducers, compose, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 import { RootState } from "../domain/entity/rootState";
 import todoCardReducer from "./todo_card/reducer";
-import todoCardListReducer from "./todo_card_list/reducer";
 
 const store = createStore(
   combineReducers<RootState>({
     todoCard: todoCardReducer,
-    todoCardList: todoCardListReducer,
   }),
   compose(
     applyMiddleware(thunk),

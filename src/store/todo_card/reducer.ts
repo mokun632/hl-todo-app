@@ -1,41 +1,58 @@
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 import { TodoCard } from "../../domain/entity/todoCard";
-import todoCardActions from "./action";
+import todoCardListActions from "./action";
 
-export const initTodoCard: TodoCard = {
+const init: TodoCard = {
   title: "",
-  todoText: "",
-  onDoneFlg: false,
-  todos: [],
+  todoCardList: [],
 };
 
-const todoCardReducer = reducerWithInitialState(initTodoCard)
+const todoCardReducer = reducerWithInitialState(init)
   .case(
-    todoCardActions.setTodoCard,
+    todoCardListActions.setTodoCardTitle,
     (state, payload) => ({
       ...state,
       title: payload
     })
   )
   .case(
-    todoCardActions.addTodo,
+    todoCardListActions.addTodoCardList,
     (state, payload) => ({
       ...state,
-      todos: [...state.todos, payload]
+      title: "",
+      todoCardList: [...state.todoCardList, {title: payload, preTodoText: "", todos: []}]
     })
   )
   .case(
-    todoCardActions.setTodoText,
+    todoCardListActions.setTodoText,
     (state, payload) => ({
       ...state,
-      todoText: payload
+      todoCardList: state.todoCardList.map((t, i) =>
+        i === payload.index ? {...t, preTodoText: payload.todoText} : t
+      )
     })
   )
   .case(
-    todoCardActions.setOnDoneFlg,
+    todoCardListActions.addTodo,
     (state, payload) => ({
       ...state,
-      onDoneFlg: payload
+      todoCardList: state.todoCardList.map((t, i) => 
+        i === payload.index ? {...t, preTodoText: "", todos: [...t.todos, {todoText: payload.todoText, doneFlg: payload.doneFlg}]}: t
+      )
+    })
+  )
+  .case(
+    todoCardListActions.setDoneFlg,
+    (state, payload) => ({
+      ...state,
+      todoCardList: state.todoCardList.map((todoCard, todoCardIndex) =>  
+        todoCardIndex === payload.todoCardIndex ? {...todoCard, todos: [
+          ...todoCard.todos.map((todo, i) => 
+          i === payload.index ? {...todo, doneFlg: payload.doneFlg} : todo
+          ) 
+        ]
+      } : todoCard
+    )
     })
   );
 
