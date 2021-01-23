@@ -1,7 +1,10 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { AlertSeverity } from '../domain/entity/alert';
 import { RootState } from '../domain/entity/rootState';
+import { TodoCard } from '../domain/entity/todoCard';
+import { emptyMessage, isEmpty, isTooLong, maxLen, tooLongMessage, isMaxCardQty, maxQty, maxQtyMessage } from '../domain/service/validation';
 
 const InputTodoWrapper = styled.div`
   margin-top: 5px;
@@ -39,28 +42,48 @@ const InputTodoButton = styled.button`
 type Props= {
   setTodoCardTitle: (title: string) => void;
   addTodoCardList: (title: string) => void;
+  openAlert: (severity: AlertSeverity, message: string) => void;
 }
 
 export const InputTodo: FC<Props> = (
   {
     setTodoCardTitle = () => undefined,
     addTodoCardList = () => undefined,
+    openAlert = () => undefined,
   }
 ) => {
   const todoCard = useSelector((state: RootState) => state.todoCard);
+
+  const addTodoCard = (title: string, todoCardList: TodoCard["todoCardList"]) => {
+    isEmpty(title) ?
+    openAlert("error", emptyMessage)
+    :
+    isTooLong(title, maxLen) ?
+    openAlert("error", emptyMessage)
+    :
+    isMaxCardQty(todoCardList, maxQty)?
+    openAlert("error", maxQtyMessage)
+    :
+    addTodoCardList(title)
+  };
+
+  const setTitle = (title: string) => {
+    isTooLong(title, maxLen) ?
+    openAlert("error", tooLongMessage)
+    :
+    setTodoCardTitle(title);
+  };
 
   return (
     <>
       <InputTodoWrapper>
         <InputTodoText
           value={todoCard.title}
-          onChange={e => setTodoCardTitle(e.target.value)} 
+          onChange={e => setTitle(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && addTodoCard(todoCard.title, todoCard.todoCardList)}
         />
         <InputTodoButton
-          disabled={!(todoCard.title.length < 10) || !todoCard.title}
-          onClick={_ => {
-            addTodoCardList(todoCard.title);
-          }}
+          onClick={_ => addTodoCard(todoCard.title, todoCard.todoCardList)}
         >
           Create Card
         </InputTodoButton>

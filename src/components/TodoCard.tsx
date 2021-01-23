@@ -2,13 +2,17 @@ import { TextField } from '@material-ui/core';
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { AlertSeverity } from '../domain/entity/alert';
 import { RootState } from '../domain/entity/rootState';
+import { isTooLong, maxLen, tooLongMessage } from '../domain/service/validation';
 
 const TodoCardsWrapper = styled.div`
   display: grid;
   grid-template-rows: 300px 1fr;
   grid-template-columns: 240px 240px 240px 240px 240px;
   grid-gap: 16px;
+  align-items: center;
+  justify-content: center;
   margin: 0 70px;
 
   @media (max-width: 500px) {
@@ -38,7 +42,7 @@ const TodoCards = styled.div`
   border-radius: 24px;
 
   @media (max-width: 500px) {
-    width: 110px;
+    width: 130px;
     height: 180px;
     margin-top: 2px;
   }
@@ -51,9 +55,11 @@ const TodoMainTitle = styled.div`
   top: 1px;
   font-size: 15px;
   text-align: center;
+  white-space:　nowrap;
+  overflow: scroll;
 
   @media (max-width: 500px) {
-    font-size: 10px;
+    font-size: 5px;
   }
 `;
 
@@ -68,34 +74,27 @@ const TodoMain = styled.div`
 
 const TodoCheckBoxWrapper = styled.div`
   display: table-cell;
-  vertical-align: middle;
-  margin: 8px 5px;
+  margin: 8px 0;
   @media (max-width: 500px) {
     margin: 0;
   }
 `;
 
-const TodoCheckBox = styled.input`
-  vertical-align:middle;
-`;
-
 const TodoCheckBoxLabel = styled.label`
-  vertical-align:middle;
   width: 100%;
 
   @media (max-width: 500px) {
-    font-size: 10px;
+    font-size: 5px;
   }
 `;
 
 const TodoText = styled(TextField)`
-  vertical-align:middle;
-  margin: 0 auto;
-  width: 200px;
+  margin: 0;
+  width: 100%;
 
   @media (max-width: 500px) {
-    margin: 0 auto;
-    width: 80px;
+    margin-left: 10px;
+    width: 100px;
   }
 `;
 
@@ -103,6 +102,7 @@ type Props = {
   addTodo: (todoText: string, doneFlg: boolean, index: number) => void;
   setTodoText: (todoText: string, index: number) => void;
   setDoneFlg: (doneFlg: boolean, todoCardIndex: number, index: number) => void;
+  openAlert: (severity: AlertSeverity, message: string) => void;
 }
 
 export const TodoCard: FC<Props> = (
@@ -110,6 +110,7 @@ export const TodoCard: FC<Props> = (
     addTodo = () => undefined,
     setTodoText = () => undefined,
     setDoneFlg = () => undefined,
+    openAlert = () => undefined,
   }
 ) => {
   const todoCard = useSelector((state: RootState) => state.todoCard);
@@ -126,7 +127,7 @@ export const TodoCard: FC<Props> = (
            <TodoMain>
             {todoCardList.todos.map((todo, i) => (
               <TodoCheckBoxWrapper key={i}>
-                <TodoCheckBox 
+                <input 
                   type="checkbox"
                   onClick={_ => setDoneFlg( todo.doneFlg? false : true, todoCardIndex, i)}
                 />
@@ -147,8 +148,14 @@ export const TodoCard: FC<Props> = (
               (  
                 <TodoCheckBoxWrapper>
                   <TodoText
+                    size="medium"
                     value={todoCard.todoCardList[todoCardIndex].preTodoText}
-                    onChange={e => setTodoText(e.target.value, todoCardIndex)}
+                    onChange={e => {
+                      isTooLong(e.target.value, maxLen)?
+                      openAlert("error", tooLongMessage)
+                      :
+                      setTodoText(e.target.value, todoCardIndex)
+                    }}
                     onKeyPress={e => {
                       e.key === "Enter" && 
                       !!todoCard.todoCardList[todoCardIndex].preTodoText &&
