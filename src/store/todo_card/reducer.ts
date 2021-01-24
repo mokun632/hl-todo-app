@@ -1,48 +1,48 @@
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 import { TodoCard } from "../../domain/entity/todoCard";
-import todoCardListActions from "./action";
+import todoCardActions from "./action";
 
 const init: TodoCard = {
-  title: "",
+  provTitle: "",
   todoCardList: [],
 };
 
 const todoCardReducer = reducerWithInitialState(init)
   .case(
-    todoCardListActions.setTodoCardTitle,
+    todoCardActions.setTodoCardTitle,
     (state, payload) => ({
       ...state,
-      title: payload
+      provTitle: payload
     })
   )
   .case(
-    todoCardListActions.addTodoCardList,
+    todoCardActions.addTodoCardList,
     (state, payload) => ({
       ...state,
-      title: "",
-      todoCardList: [...state.todoCardList, {title: payload, preTodoText: "", todos: []}]
+      provTitle: "",
+      todoCardList: [...state.todoCardList, {id: state.todoCardList.length + 1, title: payload, provTodoText: "", todos: []}]
     })
   )
   .case(
-    todoCardListActions.setTodoText,
+    todoCardActions.setTodoText,
     (state, payload) => ({
       ...state,
       todoCardList: state.todoCardList.map((t, i) =>
-        i === payload.index ? {...t, preTodoText: payload.todoText} : t
+        i === payload.index ? {...t, provTodoText: payload.provTodoText} : t
       )
     })
   )
   .case(
-    todoCardListActions.addTodo,
+    todoCardActions.addTodo,
     (state, payload) => ({
       ...state,
       todoCardList: state.todoCardList.map((t, i) => 
-        i === payload.index ? {...t, preTodoText: "", todos: [...t.todos, {todoText: payload.todoText, doneFlg: payload.doneFlg}]}: t
+        i === payload.index ? {...t, provTodoText: "", todos: [...t.todos, {id: t.todos.length + 1, todoText: payload.provTodoText, doneFlg: payload.doneFlg}]}: t
       )
     })
   )
   .case(
-    todoCardListActions.setDoneFlg,
+    todoCardActions.setDoneFlg,
     (state, payload) => ({
       ...state,
       todoCardList: state.todoCardList.map((todoCard, todoCardIndex) =>  
@@ -53,6 +53,14 @@ const todoCardReducer = reducerWithInitialState(init)
         ]
       } : todoCard
     )
+    })
+  )
+  .case(
+    todoCardActions.sortTodoCardList,
+    (state, payload) => ({
+      ...state,
+      todoCardList: state.todoCardList.splice(payload.dragIndex, 1) && 
+                    state.todoCardList.splice(payload.hoverIndex, 0, payload.todoCardList)
     })
   );
 

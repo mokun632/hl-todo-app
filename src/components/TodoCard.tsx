@@ -1,10 +1,14 @@
 import { TextField } from '@material-ui/core';
-import { FC } from 'react';
-import { useSelector } from 'react-redux';
+import { FC, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { AlertSeverity } from '../domain/entity/alert';
 import { RootState } from '../domain/entity/rootState';
 import { isTooLong, maxLen, tooLongMessage } from '../domain/service/validation';
+import { MoveHandler } from '../domain/Constants';
+import DraggableTodoCard from './DraggableTodoCard';
+import todoCardActions from '../store/todo_card/action';
+import { Card } from '../domain/entity/todoCard';
 
 const TodoCardsWrapper = styled.div`
   display: grid;
@@ -24,27 +28,6 @@ const TodoCardsWrapper = styled.div`
   ::before {
     transition: all 1.5s;
     opacity: 1;
-  }
-`;
-
-const TodoCards = styled.div`
-  position:relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 220px;
-  height: 300px;
-  margin-top: 15px;
-  border: 4px solid #33322E;
-  box-sizing: border-box;
-  box-shadow: 12px 12px 0px #33322E;
-  background: #F9F3E5;
-  border-radius: 24px;
-
-  @media (max-width: 500px) {
-    width: 130px;
-    height: 180px;
-    margin-top: 2px;
   }
 `;
 
@@ -94,8 +77,8 @@ const TodoText = styled(TextField)`
 `;
 
 type Props = {
-  addTodo: (todoText: string, doneFlg: boolean, index: number) => void;
-  setTodoText: (todoText: string, index: number) => void;
+  addTodo: (provTodoText: string, doneFlg: boolean, index: number) => void;
+  setTodoText: (provTodoText: string, index: number) => void;
   setDoneFlg: (doneFlg: boolean, todoCardIndex: number, index: number) => void;
   openAlert: (severity: AlertSeverity, message: string) => void;
 }
@@ -109,14 +92,20 @@ export const TodoCard: FC<Props> = (
   }
 ) => {
   const todoCard = useSelector((state: RootState) => state.todoCard);
+  const dispatch = useDispatch();
+  const moveItem: MoveHandler = useCallback((dragIndex, hoverIndex) => {
+    const todoCardList: Card = todoCard.todoCardList[dragIndex];
+    dispatch(todoCardActions.sortTodoCardList({todoCardList, dragIndex, hoverIndex}));
+  }, [dispatch, todoCard.todoCardList]);
 
   return (
     <TodoCardsWrapper>
       {todoCard.todoCardList.length > 0 && 
       (
         todoCard.todoCardList.map((todoCardList, todoCardIndex) => (
-         <TodoCards key={todoCardIndex}>
-           <TodoMainTitle>
+        <DraggableTodoCard key={todoCardIndex} index={todoCardIndex} id={todoCardList.id} onMove={moveItem}>
+          <>
+           <TodoMainTitle >
              {todoCardList.title}
            </TodoMainTitle>
            <TodoMain>
@@ -144,7 +133,7 @@ export const TodoCard: FC<Props> = (
                 <TodoCheckBoxWrapper>
                   <TodoText
                     size="medium"
-                    value={todoCard.todoCardList[todoCardIndex].preTodoText}
+                    value={todoCard.todoCardList[todoCardIndex].provTodoText}
                     onChange={e => {
                       isTooLong(e.target.value, maxLen)?
                       openAlert("error", tooLongMessage)
@@ -153,19 +142,20 @@ export const TodoCard: FC<Props> = (
                     }}
                     onKeyPress={e => {
                       e.key === "Enter" && 
-                      !!todoCard.todoCardList[todoCardIndex].preTodoText &&
-                      addTodo(todoCard.todoCardList[todoCardIndex].preTodoText, false, todoCardIndex)
+                      !!todoCard.todoCardList[todoCardIndex].provTodoText &&
+                      addTodo(todoCard.todoCardList[todoCardIndex].provTodoText, false, todoCardIndex)
                     }} 
                     onBlur={_ => {
-                      !!todoCard.todoCardList[todoCardIndex].preTodoText && 
-                      addTodo(todoCard.todoCardList[todoCardIndex].preTodoText, false, todoCardIndex)
+                      !!todoCard.todoCardList[todoCardIndex].provTodoText && 
+                      addTodo(todoCard.todoCardList[todoCardIndex].provTodoText, false, todoCardIndex)
                     }}
                   />
                 </TodoCheckBoxWrapper>
               )
             }
            </TodoMain>
-         </TodoCards>
+          </>
+        </DraggableTodoCard>
        ))
       )
       }

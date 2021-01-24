@@ -1,7 +1,11 @@
 export type TodoCard = {
-  title: string,
-  todoCardList: {
-    title: string,
-    preTodoText: string,
-    todos: { todoText: string, doneFlg: boolean}[]}[]
+  provTitle: string,
+  todoCardList: Card[]
 }; 
+
+export type Card = {
+  id: number,
+  title: string,
+  provTodoText: string,
+  todos: { id: number, todoText: string, doneFlg: boolean}[],
+};

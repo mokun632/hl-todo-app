@@ -12,13 +12,13 @@ const Todo: FC = () => {
   return (
     <>
       <InputTodo
-        setTodoCardTitle={ (title: string) => {dispatch(todoCardActions.setTodoCardTitle(title))}}
-        addTodoCardList={ (title: string) => {dispatch(todoCardActions.addTodoCardList(title))}}
+        setTodoCardTitle={ (provTitle: string) => {dispatch(todoCardActions.setTodoCardTitle(provTitle))}}
+        addTodoCardList={ (provTitle: string) => {dispatch(todoCardActions.addTodoCardList(provTitle))}}
         openAlert={ (severity: AlertSeverity, message: string) => {dispatch(alertActions.openAlert({severity, message}))}}
       />
       <TodoCard
-        addTodo={ (todoText: string, doneFlg: boolean, index: number) => {dispatch(todoCardActions.addTodo({todoText, doneFlg, index}))} }
-        setTodoText={ (todoText: string, index: number) => {dispatch(todoCardActions.setTodoText({todoText, index}))}}
+        addTodo={ (provTodoText: string, doneFlg: boolean, index: number) => {dispatch(todoCardActions.addTodo({provTodoText, doneFlg, index}))} }
+        setTodoText={ (provTodoText: string, index: number) => {dispatch(todoCardActions.setTodoText({provTodoText, index}))}}
         setDoneFlg={ (doneFlg: boolean, todoCardIndex: number, index: number) => {dispatch(todoCardActions.setDoneFlg({doneFlg, todoCardIndex, index}))}}
         openAlert={ (severity: AlertSeverity, message: string) => {dispatch(alertActions.openAlert({severity, message}))}}
       />

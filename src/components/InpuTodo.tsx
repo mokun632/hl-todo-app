@@ -40,8 +40,8 @@ const InputTodoButton = styled.button`
 `;
 
 type Props= {
-  setTodoCardTitle: (title: string) => void;
-  addTodoCardList: (title: string) => void;
+  setTodoCardTitle: (provTitle: string) => void;
+  addTodoCardList: (provTitlele: string) => void;
   openAlert: (severity: AlertSeverity, message: string) => void;
 }
 
@@ -54,36 +54,36 @@ export const InputTodo: FC<Props> = (
 ) => {
   const todoCard = useSelector((state: RootState) => state.todoCard);
 
-  const addTodoCard = (title: string, todoCardList: TodoCard["todoCardList"]) => {
-    isEmpty(title) ?
+  const addTodoCard = (provTitle: string, todoCardList: TodoCard["todoCardList"]) => {
+    isEmpty(provTitle) ?
     openAlert("error", emptyMessage)
     :
-    isTooLong(title, maxLen) ?
+    isTooLong(provTitle, maxLen) ?
     openAlert("error", emptyMessage)
     :
     isMaxCardQty(todoCardList, maxQty)?
     openAlert("error", maxQtyMessage)
     :
-    addTodoCardList(title)
+    addTodoCardList(provTitle)
   };
 
-  const setTitle = (title: string) => {
-    isTooLong(title, maxLen) ?
+  const setTitle = (provTitle: string) => {
+    isTooLong(provTitle, maxLen) ?
     openAlert("error", tooLongMessage)
     :
-    setTodoCardTitle(title);
+    setTodoCardTitle(provTitle);
   };
 
   return (
     <>
       <InputTodoWrapper>
         <InputTodoText
-          value={todoCard.title}
+          value={todoCard.provTitle}
           onChange={e => setTitle(e.target.value)}
-                    onKeyDown={e => e.key === "Enter" && addTodoCard(todoCard.title, todoCard.todoCardList)}
+                    onKeyDown={e => e.key === "Enter" && addTodoCard(todoCard.provTitle, todoCard.todoCardList)}
         />
         <InputTodoButton
-          onClick={_ => addTodoCard(todoCard.title, todoCard.todoCardList)}
+          onClick={_ => addTodoCard(todoCard.provTitle, todoCard.todoCardList)}
         >
           Create Card
         </InputTodoButton>
