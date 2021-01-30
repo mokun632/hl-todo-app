@@ -1,5 +1,6 @@
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 import { TodoCard } from "../../domain/entity/todoCard";
+import update from 'immutability-helper';
 import todoCardActions from "./action";
 
 const init: TodoCard = {
@@ -59,8 +60,12 @@ const todoCardReducer = reducerWithInitialState(init)
     todoCardActions.sortTodoCardList,
     (state, payload) => ({
       ...state,
-      todoCardList: state.todoCardList.splice(payload.dragIndex, 1) && 
-                    state.todoCardList.splice(payload.hoverIndex, 0, payload.todoCardList)
+      todoCardList: update(state.todoCardList, 
+        {$splice: [ 
+          [payload.index, 1], 
+          [payload.atIndex, 0, payload.card]
+        ]
+      })
     })
   );
 

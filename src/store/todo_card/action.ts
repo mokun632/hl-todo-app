@@ -9,7 +9,7 @@ const todoCardActions = {
   setTodoText: actionCraeter<{provTodoText: string, index: number}>("SET_TODO_TEXT"),
   addTodo: actionCraeter<{provTodoText: string, doneFlg: boolean, index: number}>("ADD_TODOS"),
   setDoneFlg: actionCraeter<{doneFlg: boolean, todoCardIndex: number, index: number}>("SET_DONE_FLG"),
-  sortTodoCardList: actionCraeter<{todoCardList: Card, dragIndex: number, hoverIndex: number}>("SORT_TODO_CARD_LIST"),
+  sortTodoCardList: actionCraeter<{card: Card, index: number, atIndex: number}>("SORT_TODO_CARD_LIST"),
 };
 
 export default todoCardActions;

@@ -25,8 +25,8 @@ const App: FC = () => {
       </HeaderWrapper>
       <DndProvider backend={(navigator.userAgent.match(/iPhone|Android.+Mobile/) ? TouchBackend : HTML5Backend)}>
         <Todo />
-        <Alert />
       </DndProvider>
+      <Alert />
     </>
   )
 };

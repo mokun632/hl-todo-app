@@ -1,14 +1,14 @@
 import { TextField } from '@material-ui/core';
-import { FC, useCallback } from 'react';
+import { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { AlertSeverity } from '../domain/entity/alert';
 import { RootState } from '../domain/entity/rootState';
 import { isTooLong, maxLen, tooLongMessage } from '../domain/service/validation';
-import { MoveHandler } from '../domain/Constants';
 import DraggableTodoCard from './DraggableTodoCard';
-import todoCardActions from '../store/todo_card/action';
-import { Card } from '../domain/entity/todoCard';
+import { useDrop } from 'react-dnd';
+import { ItemTypes } from '../dnd/entity/ItemTypes';
+import { moveCardHandler, findCardHandler } from '../dnd/service/dndHandlers';
 
 const TodoCardsWrapper = styled.div`
   display: grid;
@@ -43,6 +43,27 @@ const TodoMainTitle = styled.div`
 
   @media (max-width: 500px) {
     font-size: 5px;
+  }
+`;
+
+const TodoCards = styled.div`
+  position:relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 220px;
+  height: 300px;
+  margin-top: 15px;
+  border: 4px solid #33322E;
+  box-sizing: border-box;
+  box-shadow: 12px 12px 0px #33322E;
+  background: #F9F3E5;
+  border-radius: 24px;
+
+  @media (max-width: 500px) {
+    width: 130px;
+    height: 180px;
+    margin-top: 2px;
   }
 `;
 
@@ -93,27 +114,31 @@ export const TodoCard: FC<Props> = (
 ) => {
   const todoCard = useSelector((state: RootState) => state.todoCard);
   const dispatch = useDispatch();
-  const moveItem: MoveHandler = useCallback((dragIndex, hoverIndex) => {
-    const todoCardList: Card = todoCard.todoCardList[dragIndex];
-    dispatch(todoCardActions.sortTodoCardList({todoCardList, dragIndex, hoverIndex}));
-  }, [dispatch, todoCard.todoCardList]);
+  const moveCard = (id: string, atIndex: number) => { dispatch(moveCardHandler(id, atIndex, todoCard )) };
+  const findCard = (id: string) => { 
+    const card = findCardHandler(id, todoCard);
+    return { index: card.index }
+  };
+
+  const [, drop] = useDrop({ accept: ItemTypes.CARD })
 
   return (
-    <TodoCardsWrapper>
+    <TodoCardsWrapper ref={drop}>
       {todoCard.todoCardList.length > 0 && 
       (
-        todoCard.todoCardList.map((todoCardList, todoCardIndex) => (
-        <DraggableTodoCard key={todoCardIndex} index={todoCardIndex} id={todoCardList.id} onMove={moveItem}>
-          <>
+        todoCard.todoCardList.map((ItodoCard, todoCardIndex) => (
+        <DraggableTodoCard key={todoCardIndex} id={`${ItodoCard.id}`} card={ItodoCard} moveCard={moveCard} findCard={findCard}>
+          <TodoCards>
            <TodoMainTitle >
-             {todoCardList.title}
+             {ItodoCard.title}
            </TodoMainTitle>
            <TodoMain>
-            {todoCardList.todos.map((todo, i) => (
+            {ItodoCard.todos.map((todo, i) => (
               <TodoCheckBoxWrapper key={i}>
                 <input 
                   type="checkbox"
                   onClick={_ => setDoneFlg( todo.doneFlg? false : true, todoCardIndex, i)}
+                  checked={todo.doneFlg}
                 />
                 <TodoCheckBoxLabel>
                   {todo.doneFlg? 
@@ -128,7 +153,7 @@ export const TodoCard: FC<Props> = (
              )
             }
             {
-              todoCardList.todos.length < 6 &&
+              ItodoCard.todos.length < 6 &&
               (  
                 <TodoCheckBoxWrapper>
                   <TodoText
@@ -154,7 +179,7 @@ export const TodoCard: FC<Props> = (
               )
             }
            </TodoMain>
-          </>
+          </TodoCards>
         </DraggableTodoCard>
        ))
       )
