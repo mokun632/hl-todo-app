@@ -7,7 +7,7 @@ export type Card = {
   id: number,
   title: string,
   provTodoText: string,
-  todos: Todo,
+  todos: Todo[],
 };
 
-export type Todo = { id: number, todoText: string, doneFlg: boolean}[];
+export type Todo = { id: number, todoText: string, doneFlg: boolean};

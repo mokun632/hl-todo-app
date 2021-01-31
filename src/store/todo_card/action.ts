@@ -1,5 +1,5 @@
 import actionCreaterFactory from "typescript-fsa";
-import { Card } from "../../domain/entity/todoCard";
+import { Card, Todo } from "../../domain/entity/todoCard";
 
 const actionCraeter = actionCreaterFactory();
 
@@ -10,6 +10,7 @@ const todoCardActions = {
   addTodo: actionCraeter<{provTodoText: string, doneFlg: boolean, index: number}>("ADD_TODOS"),
   setDoneFlg: actionCraeter<{doneFlg: boolean, todoCardIndex: number, index: number}>("SET_DONE_FLG"),
   sortTodoCardList: actionCraeter<{card: Card, index: number, atIndex: number}>("SORT_TODO_CARD_LIST"),
+  sortTodoList: actionCraeter<{todo: Todo, cardIndex: number, dragIndex: number, hoverIndex: number}>("SORT_TODO_LIST"),
 };
 
 export default todoCardActions;

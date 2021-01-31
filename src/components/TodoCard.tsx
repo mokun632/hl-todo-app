@@ -8,7 +8,8 @@ import { isTooLong, maxLen, tooLongMessage } from '../domain/service/validation'
 import DraggableTodoCard from './DraggableTodoCard';
 import { useDrop } from 'react-dnd';
 import { ItemTypes } from '../dnd/entity/ItemTypes';
-import { moveCardHandler, findCardHandler } from '../dnd/service/dndHandlers';
+import { moveCardHandler, findCardHandler, moveTodoHandler } from '../dnd/service/dndHandlers';
+import DraggableTodo from './DraggableTodo';
 
 const TodoCardsWrapper = styled.div`
   display: grid;
@@ -132,53 +133,62 @@ export const TodoCard: FC<Props> = (
            <TodoMainTitle >
              {ItodoCard.title}
            </TodoMainTitle>
-           <TodoMain>
-            {ItodoCard.todos.map((todo, i) => (
-              <TodoCheckBoxWrapper key={i}>
-                <input 
-                  type="checkbox"
-                  onClick={_ => setDoneFlg( todo.doneFlg? false : true, todoCardIndex, i)}
-                  checked={todo.doneFlg}
-                />
-                <TodoCheckBoxLabel>
-                  {todo.doneFlg? 
-                  <del>
-                    {todo.todoText}
-                  </del>
-                  :
-                  todo.todoText}
-                </TodoCheckBoxLabel>
-              </TodoCheckBoxWrapper>
+            <TodoMain>
+             {ItodoCard.todos.map((todo, i) => (
+              <DraggableTodo 
+                key={i} 
+                id={`${todo.id}`} 
+                todoIndex={i} 
+                moveTodo={( dragIndex: number, hoverIndex: number) => {
+                  dispatch(moveTodoHandler(todo, todoCardIndex, dragIndex, hoverIndex))
+                }}
+              >
+               <TodoCheckBoxWrapper>
+                 <input 
+                   type="checkbox"
+                   onChange={_ => setDoneFlg( todo.doneFlg? false : true, todoCardIndex, i)}
+                   checked={todo.doneFlg}
+                 />
+                 <TodoCheckBoxLabel>
+                   {todo.doneFlg? 
+                   <del>
+                     {todo.todoText}
+                   </del>
+                   :
+                   todo.todoText}
+                 </TodoCheckBoxLabel>
+               </TodoCheckBoxWrapper>
+              </DraggableTodo>
+               )
               )
-             )
-            }
-            {
-              ItodoCard.todos.length < 6 &&
-              (  
-                <TodoCheckBoxWrapper>
-                  <TodoText
-                    size="medium"
-                    value={todoCard.todoCardList[todoCardIndex].provTodoText}
-                    onChange={e => {
-                      isTooLong(e.target.value, maxLen)?
-                      openAlert("error", tooLongMessage)
-                      :
-                      setTodoText(e.target.value, todoCardIndex)
-                    }}
-                    onKeyPress={e => {
-                      e.key === "Enter" && 
-                      !!todoCard.todoCardList[todoCardIndex].provTodoText &&
-                      addTodo(todoCard.todoCardList[todoCardIndex].provTodoText, false, todoCardIndex)
-                    }} 
-                    onBlur={_ => {
-                      !!todoCard.todoCardList[todoCardIndex].provTodoText && 
-                      addTodo(todoCard.todoCardList[todoCardIndex].provTodoText, false, todoCardIndex)
-                    }}
-                  />
-                </TodoCheckBoxWrapper>
-              )
-            }
-           </TodoMain>
+             }
+             {
+               ItodoCard.todos.length < 6 &&
+               (  
+                 <TodoCheckBoxWrapper>
+                   <TodoText
+                     size="medium"
+                     value={todoCard.todoCardList[todoCardIndex].provTodoText}
+                     onChange={e => {
+                       isTooLong(e.target.value, maxLen)?
+                       openAlert("error", tooLongMessage)
+                       :
+                       setTodoText(e.target.value, todoCardIndex)
+                     }}
+                     onKeyPress={e => {
+                       e.key === "Enter" && 
+                       !!todoCard.todoCardList[todoCardIndex].provTodoText &&
+                       addTodo(todoCard.todoCardList[todoCardIndex].provTodoText, false, todoCardIndex)
+                     }} 
+                     onBlur={_ => {
+                       !!todoCard.todoCardList[todoCardIndex].provTodoText && 
+                       addTodo(todoCard.todoCardList[todoCardIndex].provTodoText, false, todoCardIndex)
+                     }}
+                   />
+                 </TodoCheckBoxWrapper>
+               )
+             }
+            </TodoMain>
           </TodoCards>
         </DraggableTodoCard>
        ))

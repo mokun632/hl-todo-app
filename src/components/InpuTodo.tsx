@@ -45,6 +45,8 @@ type Props= {
   openAlert: (severity: AlertSeverity, message: string) => void;
 }
 
+let isIME: boolean = false;
+
 export const InputTodo: FC<Props> = (
   {
     setTodoCardTitle = () => undefined,
@@ -79,8 +81,16 @@ export const InputTodo: FC<Props> = (
       <InputTodoWrapper>
         <InputTodoText
           value={todoCard.provTitle}
+          onCompositionStart={e => {
+            isIME = false;
+          }}
+          onCompositionEnd={e => {
+            isIME = true;
+          }}
           onChange={e => setTitle(e.target.value)}
-                    onKeyDown={e => e.key === "Enter" && addTodoCard(todoCard.provTitle, todoCard.todoCardList)}
+          onKeyDown={e => (isIME || todoCard.provTitle.match(/^[A-Za-z0-9]*$/)) && 
+                          e.key === "Enter" && 
+                          addTodoCard(todoCard.provTitle, todoCard.todoCardList)}
         />
         <InputTodoButton
           onClick={_ => addTodoCard(todoCard.provTitle, todoCard.todoCardList)}

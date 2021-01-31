@@ -67,6 +67,25 @@ const todoCardReducer = reducerWithInitialState(init)
         ]
       })
     })
+  )
+  .case(
+    todoCardActions.sortTodoList,
+    (state, payload) => ({
+      ...state,
+      todoCardList: state.todoCardList.map((card, i) => 
+      i === payload.cardIndex ?
+      {...card,
+       todos: update(card.todos,
+                {$splice:[
+                  [payload.dragIndex, 1],
+                  [payload.hoverIndex, 0, payload.todo]
+                ]}
+              )
+      } 
+      :
+      card
+      )
+    })
   );
 
   export default todoCardReducer;
