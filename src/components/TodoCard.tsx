@@ -8,8 +8,7 @@ import { isTooLong, maxLen, tooLongMessage } from '../domain/service/validation'
 import DraggableTodoCard from './DraggableTodoCard';
 import { useDrop } from 'react-dnd';
 import { ItemTypes } from '../dnd/entity/ItemTypes';
-import { moveCardHandler, findCardHandler, moveTodoHandler } from '../dnd/service/dndHandlers';
-import DraggableTodo from './DraggableTodo';
+import { moveCardHandler, findCardHandler } from '../dnd/service/dndHandlers';
 
 const TodoCardsWrapper = styled.div`
   display: grid;
@@ -135,15 +134,7 @@ export const TodoCard: FC<Props> = (
            </TodoMainTitle>
             <TodoMain>
              {ItodoCard.todos.map((todo, i) => (
-              <DraggableTodo 
-                key={i} 
-                id={`${todo.id}`} 
-                todoIndex={i} 
-                moveTodo={( dragIndex: number, hoverIndex: number) => {
-                  dispatch(moveTodoHandler(todo, todoCardIndex, dragIndex, hoverIndex))
-                }}
-              >
-               <TodoCheckBoxWrapper>
+               <TodoCheckBoxWrapper key={i}>
                  <input 
                    type="checkbox"
                    onChange={_ => setDoneFlg( todo.doneFlg? false : true, todoCardIndex, i)}
@@ -158,7 +149,6 @@ export const TodoCard: FC<Props> = (
                    todo.todoText}
                  </TodoCheckBoxLabel>
                </TodoCheckBoxWrapper>
-              </DraggableTodo>
                )
               )
              }
