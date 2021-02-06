@@ -1,58 +1,93 @@
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 import { TodoCard } from "../../domain/entity/todoCard";
-import todoCardListActions from "./action";
+import update from 'immutability-helper';
+import todoCardActions from "./action";
 
 const init: TodoCard = {
-  title: "",
+  provTitle: "",
   todoCardList: [],
 };
 
 const todoCardReducer = reducerWithInitialState(init)
   .case(
-    todoCardListActions.setTodoCardTitle,
+    todoCardActions.setTodoCardTitle,
     (state, payload) => ({
       ...state,
-      title: payload
+      provTitle: payload
     })
   )
   .case(
-    todoCardListActions.addTodoCardList,
+    todoCardActions.addTodoCardList,
     (state, payload) => ({
       ...state,
-      title: "",
-      todoCardList: [...state.todoCardList, {title: payload, preTodoText: "", todos: []}]
+      provTitle: "",
+      todoCardList: [...state.todoCardList, {id: state.todoCardList.length + 1, title: payload, provTodoText: "", todos: []}]
     })
   )
   .case(
-    todoCardListActions.setTodoText,
+    todoCardActions.setTodoText,
     (state, payload) => ({
       ...state,
       todoCardList: state.todoCardList.map((t, i) =>
-        i === payload.index ? {...t, preTodoText: payload.todoText} : t
+        i === payload.index ? {...t, provTodoText: payload.provTodoText} : t
       )
     })
   )
   .case(
-    todoCardListActions.addTodo,
+    todoCardActions.addTodo,
     (state, payload) => ({
       ...state,
       todoCardList: state.todoCardList.map((t, i) => 
-        i === payload.index ? {...t, preTodoText: "", todos: [...t.todos, {todoText: payload.todoText, doneFlg: payload.doneFlg}]}: t
+        i === payload.index ? {...t, provTodoText: "", todos: [...t.todos, {id: t.todos.length + 1, todoText: payload.provTodoText, doneFlg: payload.doneFlg}]}: t
       )
     })
   )
   .case(
-    todoCardListActions.setDoneFlg,
+    todoCardActions.setDoneFlg,
     (state, payload) => ({
       ...state,
-      todoCardList: state.todoCardList.map((todoCard, todoCardIndex) =>  
-        todoCardIndex === payload.todoCardIndex ? {...todoCard, todos: [
-          ...todoCard.todos.map((todo, i) => 
+      todoCardList: state.todoCardList.map((card, i) =>  
+        i === payload.cardIndex ? 
+        {...card, todos: [
+          ...card.todos.map((todo, i) => 
           i === payload.index ? {...todo, doneFlg: payload.doneFlg} : todo
           ) 
-        ]
-      } : todoCard
+        ]} 
+        : card
     )
+    })
+  )
+  .case(
+    todoCardActions.sortTodoCardList,
+    (state, payload) => ({
+      ...state,
+      todoCardList: update(state.todoCardList, 
+        {$splice: [ 
+          [payload.index, 1], 
+          [payload.atIndex, 0, payload.card]
+        ]
+      })
+    })
+  )
+  .case(
+    todoCardActions.deleteTodoCard,
+    (state, payload) => ({
+      ...state,
+      todoCardList: state.todoCardList.filter((_, i) => i !== payload.cardIndex)
+    })
+  )
+  .case(
+    todoCardActions.deleteTodo,
+    (state, payload) => ({
+      ...state,
+      todoCardList: state.todoCardList.map((card, i) => (
+        i === payload.cardIndex ?
+        {...card, 
+         todos: card.todos.filter((_, i) => i !== payload.todoIndex)
+        } 
+        :
+        card
+      ))
     })
   );
 

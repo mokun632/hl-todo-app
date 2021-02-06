@@ -1,10 +1,15 @@
-import { TextField } from '@material-ui/core';
 import { FC } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { TextField, useMediaQuery } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { AlertSeverity } from '../domain/entity/alert';
 import { RootState } from '../domain/entity/rootState';
 import { isTooLong, maxLen, tooLongMessage } from '../domain/service/validation';
+import DraggableTodoCard from './DraggableTodoCard';
+import { useDrop } from 'react-dnd';
+import { ItemTypes } from '../dnd/entity/ItemTypes';
+import { moveCardHandler, findCardHandler } from '../dnd/service/dndHandlers';
 
 const TodoCardsWrapper = styled.div`
   display: grid;
@@ -27,8 +32,42 @@ const TodoCardsWrapper = styled.div`
   }
 `;
 
+const TodoMainTitle = styled.div`
+  position: absolute;
+  height: 20px;
+  width: 90%;
+  top: 1px;
+  font-size: 15px;
+  text-align: center;
+  white-space:　nowrap;
+  overflow: scroll;
+
+  @media (max-width: 500px) {
+    font-size: 5px;
+  }
+`;
+
+const DeleteTodoCardButton = styled.button`
+  position: absolute;
+  top: -10px;
+  right: -5px;
+  transition: 0.1s;
+  background: #ebebeb;
+  border: 2px solid #33322E;
+  box-sizing: border-box;
+  font-size: 5px;
+  border-radius: 17px;
+  box-shadow: 1px 1px 0px;
+  outline: none;
+
+  :active {
+    transform: translate(1px, 1px);
+    box-shadow: none;
+  };
+`;
+
 const TodoCards = styled.div`
-  position:relative;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,21 +87,6 @@ const TodoCards = styled.div`
   }
 `;
 
-const TodoMainTitle = styled.div`
-  position: absolute;
-  height: 20px;
-  width: 90%;
-  top: 1px;
-  font-size: 15px;
-  text-align: center;
-  white-space:　nowrap;
-  overflow: scroll;
-
-  @media (max-width: 500px) {
-    font-size: 5px;
-  }
-`;
-
 const TodoMain = styled.div`
   display: flex;
   flex-direction: column;
@@ -73,11 +97,30 @@ const TodoMain = styled.div`
 `;
 
 const TodoCheckBoxWrapper = styled.div`
+  position: relative;
   display: table-cell;
   margin: 8px 0;
   @media (max-width: 500px) {
     margin: 0;
   }
+`;
+
+const DeleteTodoButton = styled(DeleteIcon)`
+  position: absolute;
+  top: -1px;
+  right: 0px;
+  transition: 0.1s;
+
+  @media (max-width: 500px) {
+    position: absolute;
+    top: 0;
+    right: 2px;
+  }
+
+  :active {
+    transform: translate(1px, 1px);
+    box-shadow: none;
+  };
 `;
 
 const TodoCheckBoxLabel = styled.label`
@@ -94,10 +137,12 @@ const TodoText = styled(TextField)`
 `;
 
 type Props = {
-  addTodo: (todoText: string, doneFlg: boolean, index: number) => void;
-  setTodoText: (todoText: string, index: number) => void;
-  setDoneFlg: (doneFlg: boolean, todoCardIndex: number, index: number) => void;
+  addTodo: (provTodoText: string, doneFlg: boolean, index: number) => void;
+  setTodoText: (provTodoText: string, index: number) => void;
+  setDoneFlg: (doneFlg: boolean, cardIndex: number, index: number) => void;
   openAlert: (severity: AlertSeverity, message: string) => void;
+  deleteTodoCard: (cardIndex: number) => void;
+  deleteTodo: (cardIndex: number, todoIndex: number) => void;
 }
 
 export const TodoCard: FC<Props> = (
@@ -106,66 +151,84 @@ export const TodoCard: FC<Props> = (
     setTodoText = () => undefined,
     setDoneFlg = () => undefined,
     openAlert = () => undefined,
+    deleteTodoCard = () => undefined,
+    deleteTodo = () => undefined,
   }
 ) => {
   const todoCard = useSelector((state: RootState) => state.todoCard);
+  const dispatch = useDispatch();
+  const moveCard = (id: string, atIndex: number) => { dispatch(moveCardHandler(id, atIndex, todoCard )) };
+  const findCard = (id: string) => { 
+    const card = findCardHandler(id, todoCard);
+    return { index: card.index }
+  };
+  const belowWidth = useMediaQuery('(max-width: 500px)')
+
+  const [, drop] = useDrop({ accept: ItemTypes.CARD })
 
   return (
-    <TodoCardsWrapper>
+    <TodoCardsWrapper ref={drop}>
       {todoCard.todoCardList.length > 0 && 
       (
-        todoCard.todoCardList.map((todoCardList, todoCardIndex) => (
-         <TodoCards key={todoCardIndex}>
-           <TodoMainTitle>
-             {todoCardList.title}
+        todoCard.todoCardList.map((ItodoCard, todoCardIndex) => (
+        <DraggableTodoCard key={todoCardIndex} id={`${ItodoCard.id}`} card={ItodoCard} moveCard={moveCard} findCard={findCard}>
+          <TodoCards>
+           <TodoMainTitle >
+             {ItodoCard.title}
            </TodoMainTitle>
-           <TodoMain>
-            {todoCardList.todos.map((todo, i) => (
-              <TodoCheckBoxWrapper key={i}>
-                <input 
-                  type="checkbox"
-                  onClick={_ => setDoneFlg( todo.doneFlg? false : true, todoCardIndex, i)}
-                />
-                <TodoCheckBoxLabel>
-                  {todo.doneFlg? 
-                  <del>
-                    {todo.todoText}
-                  </del>
-                  :
-                  todo.todoText}
-                </TodoCheckBoxLabel>
-              </TodoCheckBoxWrapper>
+           <DeleteTodoCardButton onClick={_ => deleteTodoCard(todoCardIndex)}>
+              <DeleteIcon style={belowWidth ? {fontSize: 17} : {fontSize: 20}} />
+           </DeleteTodoCardButton>
+            <TodoMain>
+             {ItodoCard.todos.map((todo, i) => (
+               <TodoCheckBoxWrapper key={i}>
+                 <input 
+                   type="checkbox"
+                   onChange={_ => setDoneFlg( todo.doneFlg? false : true, todoCardIndex, i)}
+                   checked={todo.doneFlg}
+                 />
+                 <TodoCheckBoxLabel>
+                   {todo.doneFlg? 
+                   <del>
+                     {todo.todoText}
+                   </del>
+                   :
+                   todo.todoText}
+                 </TodoCheckBoxLabel>
+                 <DeleteTodoButton style={belowWidth ? {fontSize: 17} : {fontSize: 20}} onClick={_ => deleteTodo(todoCardIndex, i)} />
+               </TodoCheckBoxWrapper>
+               )
               )
-             )
-            }
-            {
-              todoCardList.todos.length < 6 &&
-              (  
-                <TodoCheckBoxWrapper>
-                  <TodoText
-                    size="medium"
-                    value={todoCard.todoCardList[todoCardIndex].preTodoText}
-                    onChange={e => {
-                      isTooLong(e.target.value, maxLen)?
-                      openAlert("error", tooLongMessage)
-                      :
-                      setTodoText(e.target.value, todoCardIndex)
-                    }}
-                    onKeyPress={e => {
-                      e.key === "Enter" && 
-                      !!todoCard.todoCardList[todoCardIndex].preTodoText &&
-                      addTodo(todoCard.todoCardList[todoCardIndex].preTodoText, false, todoCardIndex)
-                    }} 
-                    onBlur={_ => {
-                      !!todoCard.todoCardList[todoCardIndex].preTodoText && 
-                      addTodo(todoCard.todoCardList[todoCardIndex].preTodoText, false, todoCardIndex)
-                    }}
-                  />
-                </TodoCheckBoxWrapper>
-              )
-            }
-           </TodoMain>
-         </TodoCards>
+             }
+             {
+               ItodoCard.todos.length < 6 &&
+               (  
+                 <TodoCheckBoxWrapper>
+                   <TodoText
+                     size="medium"
+                     value={todoCard.todoCardList[todoCardIndex].provTodoText}
+                     onChange={e => {
+                       isTooLong(e.target.value, maxLen)?
+                       openAlert("error", tooLongMessage)
+                       :
+                       setTodoText(e.target.value, todoCardIndex)
+                     }}
+                     onKeyPress={e => {
+                       e.key === "Enter" && 
+                       !!todoCard.todoCardList[todoCardIndex].provTodoText &&
+                       addTodo(todoCard.todoCardList[todoCardIndex].provTodoText, false, todoCardIndex)
+                     }} 
+                     onBlur={_ => {
+                       !!todoCard.todoCardList[todoCardIndex].provTodoText && 
+                       addTodo(todoCard.todoCardList[todoCardIndex].provTodoText, false, todoCardIndex)
+                     }}
+                   />
+                 </TodoCheckBoxWrapper>
+               )
+             }
+            </TodoMain>
+          </TodoCards>
+        </DraggableTodoCard>
        ))
       )
       }
