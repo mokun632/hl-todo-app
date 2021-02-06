@@ -46,13 +46,14 @@ const todoCardReducer = reducerWithInitialState(init)
     todoCardActions.setDoneFlg,
     (state, payload) => ({
       ...state,
-      todoCardList: state.todoCardList.map((todoCard, todoCardIndex) =>  
-        todoCardIndex === payload.todoCardIndex ? {...todoCard, todos: [
-          ...todoCard.todos.map((todo, i) => 
+      todoCardList: state.todoCardList.map((card, i) =>  
+        i === payload.cardIndex ? 
+        {...card, todos: [
+          ...card.todos.map((todo, i) => 
           i === payload.index ? {...todo, doneFlg: payload.doneFlg} : todo
           ) 
-        ]
-      } : todoCard
+        ]} 
+        : card
     )
     })
   )
@@ -66,6 +67,27 @@ const todoCardReducer = reducerWithInitialState(init)
           [payload.atIndex, 0, payload.card]
         ]
       })
+    })
+  )
+  .case(
+    todoCardActions.deleteTodoCard,
+    (state, payload) => ({
+      ...state,
+      todoCardList: state.todoCardList.filter((_, i) => i !== payload.cardIndex)
+    })
+  )
+  .case(
+    todoCardActions.deleteTodo,
+    (state, payload) => ({
+      ...state,
+      todoCardList: state.todoCardList.map((card, i) => (
+        i === payload.cardIndex ?
+        {...card, 
+         todos: card.todos.filter((_, i) => i !== payload.todoIndex)
+        } 
+        :
+        card
+      ))
     })
   );
 

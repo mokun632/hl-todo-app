@@ -1,7 +1,8 @@
-import { TextField } from '@material-ui/core';
 import { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { TextField, useMediaQuery } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { AlertSeverity } from '../domain/entity/alert';
 import { RootState } from '../domain/entity/rootState';
 import { isTooLong, maxLen, tooLongMessage } from '../domain/service/validation';
@@ -46,8 +47,27 @@ const TodoMainTitle = styled.div`
   }
 `;
 
+const DeleteTodoCardButton = styled.button`
+  position: absolute;
+  top: -10px;
+  right: -5px;
+  transition: 0.1s;
+  background: #ebebeb;
+  border: 2px solid #33322E;
+  box-sizing: border-box;
+  font-size: 5px;
+  border-radius: 17px;
+  box-shadow: 1px 1px 0px;
+  outline: none;
+
+  :active {
+    transform: translate(1px, 1px);
+    box-shadow: none;
+  };
+`;
+
 const TodoCards = styled.div`
-  position:relative;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,11 +97,30 @@ const TodoMain = styled.div`
 `;
 
 const TodoCheckBoxWrapper = styled.div`
+  position: relative;
   display: table-cell;
   margin: 8px 0;
   @media (max-width: 500px) {
     margin: 0;
   }
+`;
+
+const DeleteTodoButton = styled(DeleteIcon)`
+  position: absolute;
+  top: -1px;
+  right: 0px;
+  transition: 0.1s;
+
+  @media (max-width: 500px) {
+    position: absolute;
+    top: 0;
+    right: 2px;
+  }
+
+  :active {
+    transform: translate(1px, 1px);
+    box-shadow: none;
+  };
 `;
 
 const TodoCheckBoxLabel = styled.label`
@@ -100,8 +139,10 @@ const TodoText = styled(TextField)`
 type Props = {
   addTodo: (provTodoText: string, doneFlg: boolean, index: number) => void;
   setTodoText: (provTodoText: string, index: number) => void;
-  setDoneFlg: (doneFlg: boolean, todoCardIndex: number, index: number) => void;
+  setDoneFlg: (doneFlg: boolean, cardIndex: number, index: number) => void;
   openAlert: (severity: AlertSeverity, message: string) => void;
+  deleteTodoCard: (cardIndex: number) => void;
+  deleteTodo: (cardIndex: number, todoIndex: number) => void;
 }
 
 export const TodoCard: FC<Props> = (
@@ -110,6 +151,8 @@ export const TodoCard: FC<Props> = (
     setTodoText = () => undefined,
     setDoneFlg = () => undefined,
     openAlert = () => undefined,
+    deleteTodoCard = () => undefined,
+    deleteTodo = () => undefined,
   }
 ) => {
   const todoCard = useSelector((state: RootState) => state.todoCard);
@@ -119,6 +162,7 @@ export const TodoCard: FC<Props> = (
     const card = findCardHandler(id, todoCard);
     return { index: card.index }
   };
+  const belowWidth = useMediaQuery('(max-width: 500px)')
 
   const [, drop] = useDrop({ accept: ItemTypes.CARD })
 
@@ -132,6 +176,9 @@ export const TodoCard: FC<Props> = (
            <TodoMainTitle >
              {ItodoCard.title}
            </TodoMainTitle>
+           <DeleteTodoCardButton onClick={_ => deleteTodoCard(todoCardIndex)}>
+              <DeleteIcon style={belowWidth ? {fontSize: 17} : {fontSize: 20}} />
+           </DeleteTodoCardButton>
             <TodoMain>
              {ItodoCard.todos.map((todo, i) => (
                <TodoCheckBoxWrapper key={i}>
@@ -148,6 +195,7 @@ export const TodoCard: FC<Props> = (
                    :
                    todo.todoText}
                  </TodoCheckBoxLabel>
+                 <DeleteTodoButton style={belowWidth ? {fontSize: 17} : {fontSize: 20}} onClick={_ => deleteTodo(todoCardIndex, i)} />
                </TodoCheckBoxWrapper>
                )
               )

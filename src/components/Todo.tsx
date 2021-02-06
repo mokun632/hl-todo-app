@@ -19,8 +19,10 @@ const Todo: FC = () => {
       <TodoCard
         addTodo={ (provTodoText: string, doneFlg: boolean, index: number) => {dispatch(todoCardActions.addTodo({provTodoText, doneFlg, index}))} }
         setTodoText={ (provTodoText: string, index: number) => {dispatch(todoCardActions.setTodoText({provTodoText, index}))}}
-        setDoneFlg={ (doneFlg: boolean, todoCardIndex: number, index: number) => {dispatch(todoCardActions.setDoneFlg({doneFlg, todoCardIndex, index}))}}
+        setDoneFlg={ (doneFlg: boolean, cardIndex: number, index: number) => {dispatch(todoCardActions.setDoneFlg({doneFlg, cardIndex, index}))}}
         openAlert={ (severity: AlertSeverity, message: string) => {dispatch(alertActions.openAlert({severity, message}))}}
+        deleteTodoCard={ (cardIndex: number) => {dispatch(todoCardActions.deleteTodoCard({cardIndex}))} }
+        deleteTodo={ (cardIndex: number, todoIndex: number) => {dispatch(todoCardActions.deleteTodo({cardIndex, todoIndex}))} }
       />
     </>
   )
