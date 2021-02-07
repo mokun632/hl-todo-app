@@ -5,12 +5,14 @@ import { useDispatch } from "react-redux";
 import todoCardActions from "../store/todo_card/action";
 import alertActions from "../store/alert/action";
 import { AlertSeverity } from "../domain/entity/alert";
+import Chart from "./Chart";
 
 const Todo: FC = () => {
   const dispatch = useDispatch();
 
   return (
     <>
+      <Chart />
       <InputTodo
         setTodoCardTitle={ (provTitle: string) => {dispatch(todoCardActions.setTodoCardTitle(provTitle))}}
         addTodoCardList={ (provTitle: string) => {dispatch(todoCardActions.addTodoCardList(provTitle))}}

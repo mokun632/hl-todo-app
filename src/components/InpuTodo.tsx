@@ -7,8 +7,8 @@ import { TodoCard } from '../domain/entity/todoCard';
 import { emptyMessage, isEmpty, isTooLong, maxLen, tooLongMessage, isMaxCardQty, maxQty, maxQtyMessage } from '../domain/service/validation';
 
 const InputTodoWrapper = styled.div`
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin-top: 30px;
+  margin-bottom: 30px;
   text-align: center;
   height: 30px;
 `;
