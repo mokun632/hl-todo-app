@@ -1,3 +1,4 @@
+import { useMediaQuery } from "@material-ui/core";
 import { FC } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -31,6 +32,7 @@ const COLORS = [ '#00ffea', '#b600fe', '#00C49F', '#FFBB28', '#00a2ff', '#ff0000
 
 const Chart: FC = () => {
   const todoCard = useSelector((state: RootState) => state.todoCard);
+  const belowWidth = useMediaQuery('(max-width: 500px)')
   const createBarData = (todoCard: TodoCard) => {
     const preData = todoCard.todoCardList.map((todo, _) => {
       return{
@@ -55,8 +57,6 @@ const Chart: FC = () => {
       c.todos
     ).flat().length;
     const doneFlgRate = Math.floor(doneFlgCount / totalDoneFlgCount * 100);
-    console.log(doneFlgCount)
-    console.log(totalDoneFlgCount)
     const otherDoneRate = 
       todoCard.todoCardList.map((c, i) => {
       const n = Math.floor(c.todos.filter((t, _) => t.doneFlg).length / c.todos.length * 100);
@@ -74,7 +74,7 @@ const Chart: FC = () => {
   return (
     <ChartWrapper>
       <BarChart
-        width={500}
+        width={belowWidth ? 400 : 500}
         height={300}
         data={barData}
         margin={{
@@ -89,9 +89,9 @@ const Chart: FC = () => {
         <Bar dataKey="completed" stackId="a" fill="#82ca9d" />
         <Bar dataKey="uncompleted" stackId="a" fill="#8884d8" />
       </BarChart>
-      <RadialBarChart width={500} height={300} cx={350} cy={150} innerRadius={30} outerRadius={150} barSize={14} data={todoRateData}>
+      <RadialBarChart width={belowWidth ? 400 : 500} height={belowWidth ? 200 : 300} cx={belowWidth ? 150 : 350} cy={belowWidth ? 100 : 150} innerRadius={belowWidth ? 15 : 30} outerRadius={belowWidth ? 100 : 150} barSize={belowWidth ? 8 : 14} data={todoRateData}>
         <RadialBar label={{ position: 'insideStart', fill: '#fff' }} background dataKey="uv" />
-        <Legend iconSize={10} width={200} height={140} layout="radial" verticalAlign="top" />
+        <Legend iconSize={belowWidth ? 0 : 10} width={belowWidth ? 120 : 200} height={belowWidth ? 100 : 140} layout={belowWidth ? "vertical" : "radial"} verticalAlign={"top"} align={ belowWidth ? "right" : "center"} />
       </RadialBarChart>
     </ChartWrapper>
   )
