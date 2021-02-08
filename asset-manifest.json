@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.js": "/hl-todo-app/static/js/main.7e6f6acd.chunk.js",
-    "main.js.map": "/hl-todo-app/static/js/main.7e6f6acd.chunk.js.map",
+    "main.js": "/hl-todo-app/static/js/main.e8dfef47.chunk.js",
+    "main.js.map": "/hl-todo-app/static/js/main.e8dfef47.chunk.js.map",
     "runtime-main.js": "/hl-todo-app/static/js/runtime-main.7246c88f.js",
     "runtime-main.js.map": "/hl-todo-app/static/js/runtime-main.7246c88f.js.map",
-    "static/js/2.be443b5a.chunk.js": "/hl-todo-app/static/js/2.be443b5a.chunk.js",
-    "static/js/2.be443b5a.chunk.js.map": "/hl-todo-app/static/js/2.be443b5a.chunk.js.map",
+    "static/js/2.47b7debd.chunk.js": "/hl-todo-app/static/js/2.47b7debd.chunk.js",
+    "static/js/2.47b7debd.chunk.js.map": "/hl-todo-app/static/js/2.47b7debd.chunk.js.map",
     "index.html": "/hl-todo-app/index.html",
-    "static/js/2.be443b5a.chunk.js.LICENSE.txt": "/hl-todo-app/static/js/2.be443b5a.chunk.js.LICENSE.txt"
+    "static/js/2.47b7debd.chunk.js.LICENSE.txt": "/hl-todo-app/static/js/2.47b7debd.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.7246c88f.js",
-    "static/js/2.be443b5a.chunk.js",
-    "static/js/main.7e6f6acd.chunk.js"
+    "static/js/2.47b7debd.chunk.js",
+    "static/js/main.e8dfef47.chunk.js"
   ]
 }
