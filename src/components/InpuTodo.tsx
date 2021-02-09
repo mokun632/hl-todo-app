@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { AlertSeverity } from '../domain/entity/alert';
 import { RootState } from '../domain/entity/rootState';
 import { TodoCard } from '../domain/entity/todoCard';
-import { emptyMessage, isEmpty, isTooLong, maxLen, tooLongMessage, isMaxCardQty, maxQty, maxQtyMessage } from '../domain/service/validation';
+import { emptyMessage, isEmpty, isTooLong, maxLen, tooLongMessage, isMaxCardQty, maxQty, maxQtyMessage, uaCheck, spMaxLen } from '../domain/service/validation';
 
 const InputTodoWrapper = styled.div`
   margin-top: 30px;
@@ -14,11 +14,10 @@ const InputTodoWrapper = styled.div`
 
   @media (max-width: 500px) {
     margin-top: 80px;
-    margin-bottom: 80px;
   }
 `;
 
-const InputTodoText = styled.input`
+const InputTodoCardTitle = styled.input`
   vertical-align: middle;
   border: 2px solid #33322E;
   border-radius: 4px;
@@ -51,6 +50,7 @@ type Props= {
 }
 
 let isIME: boolean = false;
+const checkMaxLen = uaCheck ? spMaxLen : maxLen;
 
 export const InputTodo: FC<Props> = (
   {
@@ -75,7 +75,7 @@ export const InputTodo: FC<Props> = (
   };
 
   const setTitle = (provTitle: string) => {
-    isTooLong(provTitle, maxLen) ?
+    isTooLong(provTitle, checkMaxLen) ?
     openAlert("error", tooLongMessage)
     :
     setTodoCardTitle(provTitle);
@@ -84,7 +84,7 @@ export const InputTodo: FC<Props> = (
   return (
     <>
       <InputTodoWrapper>
-        <InputTodoText
+        <InputTodoCardTitle
           value={todoCard.provTitle}
           onCompositionStart={e => {
             isIME = false;

@@ -21,7 +21,7 @@ const DraggableTodoCard: FC<Props> = ({
 }) => {
 
   const originalIndex = findCard(id).index
-  const [, drag] = useDrag({
+  const [{ isDragging }, drag] = useDrag({
     item: { type: ItemTypes.CARD, id, originalIndex },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -46,8 +46,9 @@ const DraggableTodoCard: FC<Props> = ({
     },
   })
 
+  const opacity = isDragging ? 0.1 : 1
   return (
-    <div ref={(node) => drag(drop(node))} style={{cursor: 'move'}}>
+    <div ref={(node) => drag(drop(node))} style={{cursor: 'move', opacity}}>
       {children}
     </div>
   )

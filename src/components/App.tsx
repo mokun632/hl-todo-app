@@ -3,6 +3,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import styled from 'styled-components';
+import { uaCheck } from '../domain/service/validation';
 import Alert from './Alert';
 import Todo from './Todo';
 
@@ -23,7 +24,7 @@ const App: FC = () => {
           Todo
         </HeaderLogo>
       </HeaderWrapper>
-      <DndProvider backend={(navigator.userAgent.match(/iPhone|Android.+Mobile/) ? TouchBackend : HTML5Backend)}>
+      <DndProvider backend={(uaCheck ? TouchBackend : HTML5Backend)}>
         <Todo />
       </DndProvider>
       <Alert />

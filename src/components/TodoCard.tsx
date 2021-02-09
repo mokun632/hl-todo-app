@@ -5,7 +5,7 @@ import { TextField, useMediaQuery } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { AlertSeverity } from '../domain/entity/alert';
 import { RootState } from '../domain/entity/rootState';
-import { isTooLong, maxLen, tooLongMessage } from '../domain/service/validation';
+import { isTooLong, maxLen, spMaxLen, tooLongMessage, uaCheck } from '../domain/service/validation';
 import DraggableTodoCard from './DraggableTodoCard';
 import { useDrop } from 'react-dnd';
 import { ItemTypes } from '../dnd/entity/ItemTypes';
@@ -43,7 +43,7 @@ const TodoMainTitle = styled.div`
   overflow: scroll;
 
   @media (max-width: 500px) {
-    font-size: 5px;
+    font-size: 10px;
   }
 `;
 
@@ -53,13 +53,18 @@ const DeleteTodoCardButton = styled.button`
   right: -5px;
   transition: 0.1s;
   background: #ebebeb;
-  border: 2px solid #33322E;
+  border: 1px solid #33322E;
   box-sizing: border-box;
   font-size: 5px;
   border-radius: 17px;
   box-shadow: 1px 1px 0px;
   outline: none;
+  overflow: visible;
 
+  @media (max-width: 500px) {
+    top: -14px;
+    left: -10px;
+  }
   :active {
     transform: translate(1px, 1px);
     box-shadow: none;
@@ -100,6 +105,11 @@ const TodoCheckBoxWrapper = styled.div`
   position: relative;
   display: table-cell;
   margin: 8px 0;
+  white-space: nowrap;
+  label {
+    overflow: scroll;
+  }
+
   @media (max-width: 500px) {
     margin: 0;
   }
@@ -112,9 +122,8 @@ const DeleteTodoButton = styled(DeleteIcon)`
   transition: 0.1s;
 
   @media (max-width: 500px) {
-    position: absolute;
-    top: 0;
-    right: 2px;
+    top: 4px;
+    right: -3px;
   }
 
   :active {
@@ -127,7 +136,7 @@ const TodoCheckBoxLabel = styled.label`
   width: 100%;
 
   @media (max-width: 500px) {
-    font-size: 5px;
+    font-size: 10px;
   }
 `;
 
@@ -144,6 +153,8 @@ type Props = {
   deleteTodoCard: (cardIndex: number) => void;
   deleteTodo: (cardIndex: number, todoIndex: number) => void;
 }
+
+const checkMaxLen = uaCheck ? spMaxLen : maxLen;
 
 export const TodoCard: FC<Props> = (
   {
@@ -177,7 +188,7 @@ export const TodoCard: FC<Props> = (
              {ItodoCard.title}
            </TodoMainTitle>
            <DeleteTodoCardButton onClick={_ => deleteTodoCard(todoCardIndex)}>
-              <DeleteIcon style={belowWidth ? {fontSize: 17} : {fontSize: 20}} />
+              <DeleteIcon style={belowWidth ? {fontSize: 14} : {fontSize: 20}} />
            </DeleteTodoCardButton>
             <TodoMain>
              {ItodoCard.todos.map((todo, i) => (
@@ -208,7 +219,7 @@ export const TodoCard: FC<Props> = (
                      size="medium"
                      value={todoCard.todoCardList[todoCardIndex].provTodoText}
                      onChange={e => {
-                       isTooLong(e.target.value, maxLen)?
+                       isTooLong(e.target.value, checkMaxLen)?
                        openAlert("error", tooLongMessage)
                        :
                        setTodoText(e.target.value, todoCardIndex)

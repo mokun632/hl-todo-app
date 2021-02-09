@@ -1,5 +1,4 @@
-import { createStore, combineReducers, compose, applyMiddleware } from "redux";
-import thunk from "redux-thunk";
+import { createStore, combineReducers, compose, } from "redux";
 import { RootState } from "../domain/entity/rootState";
 import alertReducer from "./alert/reducer";
 import todoCardReducer from "./todo_card/reducer";
@@ -10,7 +9,6 @@ const store = createStore(
     alert: alertReducer
   }),
   compose(
-    applyMiddleware(thunk),
     (window as any).__REDUX_DEVTOOLS_EXTENSION__&&
     (window as any).__REDUX_DEVTOOLS_EXTENSION__()
   )

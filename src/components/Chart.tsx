@@ -16,6 +16,7 @@ const ChartWrapper = styled.div`
   align-items: center;
   justify-content: center;
   margin: 0 70px;
+  overflow: scroll;
 
   @media (max-width: 500px) {
     grid-template-columns: 1fr;
