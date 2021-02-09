@@ -20,7 +20,7 @@ const TodoCardsWrapper = styled.div`
   justify-content: center;
   margin: 0 70px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 850px) {
     grid-template-rows: 180px 180px 180px 180px 180px;
     grid-template-columns: 130px 130px;
     grid-gap: 8px;
@@ -42,7 +42,7 @@ const TodoMainTitle = styled.div`
   white-space:　nowrap;
   overflow: scroll;
 
-  @media (max-width: 500px) {
+  @media (max-width: 850px) {
     font-size: 10px;
   }
 `;
@@ -61,9 +61,9 @@ const DeleteTodoCardButton = styled.button`
   outline: none;
   overflow: visible;
 
-  @media (max-width: 500px) {
-    top: -14px;
-    left: -10px;
+  @media (max-width: 850px) {
+    top: -13px;
+    right: -10px;
   }
   :active {
     transform: translate(1px, 1px);
@@ -85,7 +85,7 @@ const TodoCards = styled.div`
   background: #F9F3E5;
   border-radius: 24px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 850px) {
     width: 130px;
     height: 180px;
     margin-top: 2px;
@@ -110,7 +110,7 @@ const TodoCheckBoxWrapper = styled.div`
     overflow: scroll;
   }
 
-  @media (max-width: 500px) {
+  @media (max-width: 850px) {
     margin: 0;
   }
 `;
@@ -121,7 +121,7 @@ const DeleteTodoButton = styled(DeleteIcon)`
   right: 0px;
   transition: 0.1s;
 
-  @media (max-width: 500px) {
+  @media (max-width: 850px) {
     top: 4px;
     right: -3px;
   }
@@ -135,7 +135,7 @@ const DeleteTodoButton = styled(DeleteIcon)`
 const TodoCheckBoxLabel = styled.label`
   width: 100%;
 
-  @media (max-width: 500px) {
+  @media (max-width: 850px) {
     font-size: 10px;
   }
 `;
@@ -173,7 +173,7 @@ export const TodoCard: FC<Props> = (
     const card = findCardHandler(id, todoCard);
     return { index: card.index }
   };
-  const belowWidth = useMediaQuery('(max-width: 500px)')
+  const belowWidth = useMediaQuery('(max-width: 850px)')
 
   const [, drop] = useDrop({ accept: ItemTypes.CARD })
 

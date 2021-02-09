@@ -18,7 +18,7 @@ const ChartWrapper = styled.div`
   margin: 0 70px;
   overflow: scroll;
 
-  @media (max-width: 500px) {
+  @media (max-width: 850px) {
     grid-template-columns: 1fr;
     grid-gap: 3px;
     margin: 0 30px;
@@ -33,7 +33,7 @@ const COLORS = [ '#00ffea', '#b600fe', '#00C49F', '#FFBB28', '#00a2ff', '#ff0000
 
 const Chart: FC = () => {
   const todoCard = useSelector((state: RootState) => state.todoCard);
-  const belowWidth = useMediaQuery('(max-width: 500px)')
+  const belowWidth = useMediaQuery('(max-width: 850px)')
   const createBarData = (todoCard: TodoCard) => {
     const preData = todoCard.todoCardList.map((todo, _) => {
       return{

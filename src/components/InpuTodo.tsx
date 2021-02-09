@@ -12,7 +12,7 @@ const InputTodoWrapper = styled.div`
   text-align: center;
   height: 30px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 850px) {
     margin-top: 80px;
   }
 `;
