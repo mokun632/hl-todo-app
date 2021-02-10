@@ -106,9 +106,6 @@ const TodoCheckBoxWrapper = styled.div`
   display: table-cell;
   margin: 8px 0;
   white-space: nowrap;
-  label {
-    overflow: scroll;
-  }
 
   @media (max-width: 850px) {
     margin: 0;
