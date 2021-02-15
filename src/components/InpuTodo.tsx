@@ -49,7 +49,6 @@ type Props= {
   openAlert: (severity: AlertSeverity, message: string) => void;
 }
 
-let isIME: boolean = false;
 const checkMaxLen = uaCheck ? spMaxLen : maxLen;
 
 export const InputTodo: FC<Props> = (
@@ -86,16 +85,7 @@ export const InputTodo: FC<Props> = (
       <InputTodoWrapper>
         <InputTodoCardTitle
           value={todoCard.provTitle}
-          onCompositionStart={e => {
-            isIME = false;
-          }}
-          onCompositionEnd={e => {
-            isIME = true;
-          }}
           onChange={e => setTitle(e.target.value)}
-          onKeyDown={e => (isIME || todoCard.provTitle.match(/^[A-Za-z0-9]*$/)) && 
-                          e.key === "Enter" && 
-                          addTodoCard(todoCard.provTitle, todoCard.todoCardList)}
         />
         <InputTodoButton
           onClick={_ => addTodoCard(todoCard.provTitle, todoCard.todoCardList)}

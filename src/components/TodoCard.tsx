@@ -40,7 +40,6 @@ const TodoMainTitle = styled.div`
   font-size: 15px;
   text-align: center;
   white-space:　nowrap;
-  overflow: scroll;
 
   @media (max-width: 850px) {
     font-size: 10px;
@@ -59,7 +58,6 @@ const DeleteTodoCardButton = styled.button`
   border-radius: 17px;
   box-shadow: 1px 1px 0px;
   outline: none;
-  overflow: visible;
 
   @media (max-width: 850px) {
     top: -13px;
